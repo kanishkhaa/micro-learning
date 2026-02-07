@@ -7,10 +7,15 @@ const fs = require("fs");
 // Multer setup for file uploads
 const upload = multer({ dest: "uploads/" });
 
-// GET all topics
+// GET all topics (optional: filter by main & sub query params)
 router.get("/", async (req, res) => {
   try {
-    const topics = await Topic.find({}).sort({ mainCategory: 1, subCategory: 1, order: 1 });
+    const { main, sub } = req.query;
+    const filter = {};
+    if (main) filter.mainCategory = main;
+    if (sub) filter.subCategory = sub;
+
+    const topics = await Topic.find(filter).sort({ mainCategory: 1, subCategory: 1, order: 1 });
     res.json(topics);
   } catch (err) {
     res.status(500).json({ message: err.message });

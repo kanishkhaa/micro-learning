@@ -6,11 +6,14 @@ import API from "../services/api";
 const Favourites = () => {
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     API.get("/favorites/topics")
       .then((res) => setTopics(res.data || []))
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
   }, []);
 
   const openModule = (t) => {
@@ -26,45 +29,66 @@ const Favourites = () => {
 
   return (
     <Layout>
-      <div className="p-6 space-y-4">
-        <h2 className="text-xl font-bold">Favourite Modules</h2>
-        <p className="text-sm text-gray-500">
-          These are the topics you’ve marked as favourites from the roadmap.
-        </p>
-
-        {topics.length === 0 && (
-          <p className="text-sm text-gray-500">
-            You haven&apos;t added any favourites yet. Open a roadmap and mark a
-            module as favourite.
-          </p>
-        )}
-
-        {topics.length > 0 && (
-          <div className="grid md:grid-cols-2 gap-4 mt-2">
-            {topics.map((t) => (
-              <button
-                key={t._id}
-                type="button"
-                onClick={() => openModule(t)}
-                className="text-left p-4 bg-white shadow rounded border border-gray-100 flex flex-col gap-2 hover:bg-blue-50/40 transition"
-              >
-                <p className="text-xs uppercase tracking-wide text-gray-500">
-                  {t.mainCategory} • {t.subCategory}
-                </p>
-                <p className="font-semibold text-gray-900">
-                  Module {t.order}: {t.name}
-                </p>
-                <p className="text-xs text-blue-600 mt-1">
-                  Open module and view flashcards →
-                </p>
-              </button>
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30">
+        <div className="p-6 lg:p-8 space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">⭐ Favourite Modules</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Modules you&apos;ve marked as favourites – quick access to your most-used content.
+            </p>
           </div>
-        )}
+
+          {loading && (
+            <div className="grid md:grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-28 bg-gray-100 animate-pulse rounded-2xl" />
+              ))}
+            </div>
+          )}
+
+          {!loading && topics.length === 0 && (
+            <div className="text-center py-20 bg-white/80 rounded-2xl border-2 border-gray-100">
+              <div className="text-5xl mb-4">📭</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">No favourites yet</h3>
+              <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
+                Open a roadmap from Bites, pick a topic, and click &quot;Add to Favorites&quot; on any module to add it here.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate("/bites")}
+                className="px-5 py-2.5 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600"
+              >
+                Go to Bites
+              </button>
+            </div>
+          )}
+
+          {!loading && topics.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topics.map((t) => (
+                <button
+                  key={t._id}
+                  type="button"
+                  onClick={() => openModule(t)}
+                  className="text-left p-5 bg-white rounded-2xl shadow-sm border-2 border-gray-100 hover:border-amber-200 hover:shadow-lg transition-all flex flex-col gap-2 group"
+                >
+                  <span className="text-xs uppercase tracking-wide text-gray-500">
+                    {t.mainCategory} • {t.subCategory}
+                  </span>
+                  <p className="font-semibold text-gray-900 group-hover:text-amber-700">
+                    Module {t.order}: {t.name}
+                  </p>
+                  <p className="text-xs text-amber-600 mt-1 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    Open flashcards →
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   );
 };
 
 export default Favourites;
-

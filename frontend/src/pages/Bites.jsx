@@ -88,48 +88,51 @@ const Bites = () => {
   ];
 
   const select = (main, sub) => {
-    localStorage.setItem("topic", JSON.stringify({ main, sub }));
-
-    // next we will show bite list page
-    navigate("/topic-bites");
+    const selectedTopic = { main, sub };
+    localStorage.setItem("topic", JSON.stringify(selectedTopic));
+    navigate("/topic-bites", { state: selectedTopic });
   };
+
+  const CATEGORY_ICONS = { Programming: "💻", Technology: "🌐", "CS Fundamentals": "📚", DSA: "🧩" };
 
   return (
     <Layout>
-      <div className="p-6 space-y-6">
-        <h2 className="text-xl font-bold">Choose Your Learning Path</h2>
-
-        {!progressSummary.loading && (
-          <div className="space-y-2">
-            <ProgressCard
-              title="Overall Progress"
-              subtitle="See how many modules you’ve finished across all paths"
-              completed={progressSummary.completed}
-              total={progressSummary.total}
-            />
-            <p className="text-xs text-gray-500">
-              Modules completed:{" "}
-              <span className="font-semibold text-gray-800">
-                {progressSummary.completed}
-              </span>
-              {" · "}
-              Avg learning time per module:{" "}
-              <span className="font-semibold text-gray-800">
-                {progressSummary.avgMinutes} min
-              </span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+        <div className="p-6 lg:p-8 space-y-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">📖 Choose Your Learning Path</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Select a category, then pick a topic to see its modules and start learning.
             </p>
           </div>
-        )}
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {data.map((d, i) => (
-            <BiteCard
-              key={i}
-              title={d.title}
-              items={d.items}
-              onSelect={select}
-            />
-          ))}
+          {!progressSummary.loading && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <ProgressCard
+                title="Overall Progress"
+                subtitle="Modules completed across all paths"
+                completed={progressSummary.completed}
+                total={progressSummary.total}
+              />
+              <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
+                <span><strong className="text-gray-800">{progressSummary.completed}</strong> modules done</span>
+                <span><strong className="text-gray-800">{progressSummary.avgMinutes} min</strong> avg per module</span>
+              </div>
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {data.map((d, i) => (
+              <div key={i} className="relative">
+                <BiteCard
+                  title={d.title}
+                  items={d.items}
+                  onSelect={select}
+                  icon={CATEGORY_ICONS[d.title]}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Layout>
