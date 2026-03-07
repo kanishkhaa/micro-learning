@@ -3,6 +3,7 @@ const Progress = require("../models/Progress");
 const Topic = require("../models/Topic");
 const User = require("../models/User");
 const Activity = require("../models/Activity");
+const QuizAttempt = require("../models/QuizAttempt");
 const auth = require("../middleware/authMiddleware");
 const { computeLevel } = require("../utils/levelUtils");
 
@@ -168,6 +169,18 @@ router.post("/quiz/:topicId/complete", async (req, res) => {
     const topic = await Topic.findById(topicId);
     if (!topic) {
       return res.status(404).json({ message: "Topic not found" });
+    }
+
+    // Record individual quiz attempt
+    try {
+      await QuizAttempt.create({
+        userId: req.user.id,
+        topicId,
+        score: typeof score === "number" ? score : null,
+        passed: !!passed,
+      });
+    } catch (e) {
+      console.error("Failed to record quiz attempt", e);
     }
 
     // Only award points if quiz is passed (client decides threshold)

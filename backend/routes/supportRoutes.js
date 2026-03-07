@@ -3,6 +3,7 @@ const auth = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminMiddleware");
 const SupportTicket = require("../models/SupportTicket");
 const Notification = require("../models/Notification");
+const User = require("../models/User");
 
 // All support routes require authentication
 router.use(auth);
@@ -16,6 +17,22 @@ router.post("/", async (req, res) => {
       issueTitle,
       description,
     });
+
+    // Notify all admins that a new support ticket was created
+    try {
+      const admins = await User.find({ role: "admin" }).select("_id");
+      if (admins.length > 0) {
+        const notifications = admins.map((a) => ({
+          userId: a._id,
+          message: `New support ticket: "${issueTitle}".`,
+          type: "support",
+        }));
+        await Notification.insertMany(notifications);
+      }
+    } catch (e) {
+      console.error("Failed to notify admins about support ticket", e);
+    }
+
     res.status(201).json(ticket);
   } catch (err) {
     console.error("Failed to create support ticket", err);
@@ -58,21 +75,30 @@ router.patch("/:id", admin, async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
+    const previousStatus = ticket.status;
+
     if (response !== undefined) ticket.response = response;
     if (status) ticket.status = status;
     await ticket.save();
 
-    // Notify user when admin responds
-    if (response) {
-      try {
+    // Notify user when admin responds or changes status
+    try {
+      let message = null;
+      if (response && response.trim()) {
+        message = `Support has responded to your issue "${ticket.issueTitle}".`;
+      } else if (status && status !== previousStatus) {
+        message = `The status of your issue "${ticket.issueTitle}" is now "${ticket.status}".`;
+      }
+
+      if (message) {
         await Notification.create({
           userId: ticket.userId,
-          message: `Support has responded to your issue "${ticket.issueTitle}".`,
+          message,
           type: "support",
         });
-      } catch (e) {
-        console.error("Failed to create support notification", e);
       }
+    } catch (e) {
+      console.error("Failed to create support notification", e);
     }
 
     res.json(ticket);

@@ -24,7 +24,11 @@ const Login = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/home");
+      if (res.data.user?.role === "admin") {
+        navigate("/admin/analytics");
+      } else {
+        navigate("/home");
+      }
     } catch (err) {
       setError("Login failed. Try again.");
     }

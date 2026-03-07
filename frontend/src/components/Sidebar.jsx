@@ -7,7 +7,7 @@ const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const isAdmin = user?.role === "admin";
 
-  const baseMenu = [
+  const userMenu = [
     { name: "Dashboard", path: "/home", icon: "📊" },
     { name: "Bites", path: "/bites", icon: "📖" },
     { name: "Quizzes", path: "/quizzes", icon: "🎯" },
@@ -19,11 +19,14 @@ const Sidebar = () => {
     { name: "Notifications", path: "/notifications", icon: "🔔" },
   ];
 
-  const adminMenu = isAdmin
-    ? [{ name: "Admin Analytics", path: "/admin/analytics", icon: "🛠️" }]
-    : [];
+  // When logged in as admin, show only admin-related items in the sidebar
+  const adminMenu = [
+    { name: "Admin Analytics", path: "/admin/analytics", icon: "🛠️" },
+    { name: "All Requests", path: "/admin/requests", icon: "📝" },
+    { name: "Support Tickets", path: "/admin/support", icon: "🛟" },
+  ];
 
-  const menu = [...baseMenu, ...adminMenu];
+  const menu = isAdmin ? adminMenu : userMenu;
 
   const logout = () => {
     localStorage.clear();

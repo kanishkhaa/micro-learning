@@ -14,6 +14,8 @@ import Requests from "./pages/Requests";
 import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminRequests from "./pages/AdminRequests";
+import AdminSupport from "./pages/AdminSupport";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -129,6 +131,22 @@ function App() {
           element={
             <ProtectedRoute>
               <FlashcardAdmin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/requests"
+          element={
+            <ProtectedRoute>
+              <AdminRequests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/support"
+          element={
+            <ProtectedRoute>
+              <AdminSupport />
             </ProtectedRoute>
           }
         />

@@ -10,6 +10,8 @@ router.post("/google", async (req, res) => {
     // Check user exists
     let user = await User.findOne({ email });
 
+    const now = new Date();
+
     // Create if not exists
     if (!user) {
       user = await User.create({
@@ -17,8 +19,20 @@ router.post("/google", async (req, res) => {
         email,
         picture,
         googleId,
+        lastActiveAt: now,
       });
+    } else {
+      user.lastActiveAt = now;
     }
+
+    // Ensure configured admin email is marked as admin
+    const adminEmail =
+      process.env.ADMIN_EMAIL || "kanishkhaams@gmail.com";
+    if (email === adminEmail && user.role !== "admin") {
+      user.role = "admin";
+    }
+
+    await user.save();
 
     // Create JWT
     const token = jwt.sign(
@@ -31,7 +45,6 @@ router.post("/google", async (req, res) => {
       token,
       user,
     });
-
   } catch (error) {
     res.status(500).json({
       message: "Google Login Failed",
