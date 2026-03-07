@@ -4,13 +4,26 @@ import { useNavigate, useLocation } from "react-router-dom";
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const isAdmin = user?.role === "admin";
 
-  const menu = [
+  const baseMenu = [
     { name: "Dashboard", path: "/home", icon: "📊" },
     { name: "Bites", path: "/bites", icon: "📖" },
     { name: "Quizzes", path: "/quizzes", icon: "🎯" },
     { name: "Favorites", path: "/favorites", icon: "⭐" },
+    { name: "Leaderboard", path: "/leaderboard", icon: "🏅" },
+    { name: "Forum", path: "/forum", icon: "💬" },
+    { name: "Requests", path: "/requests", icon: "📝" },
+    { name: "Support", path: "/support", icon: "🛟" },
+    { name: "Notifications", path: "/notifications", icon: "🔔" },
   ];
+
+  const adminMenu = isAdmin
+    ? [{ name: "Admin Analytics", path: "/admin/analytics", icon: "🛠️" }]
+    : [];
+
+  const menu = [...baseMenu, ...adminMenu];
 
   const logout = () => {
     localStorage.clear();
@@ -28,7 +41,7 @@ const Sidebar = () => {
         </p>
       </div>
 
-      <nav className="flex-1 space-y-1">
+      <nav className="flex-1 space-y-1 overflow-y-auto pr-1">
         {menu.map((m) => {
           const isActive = location.pathname === m.path;
           return (

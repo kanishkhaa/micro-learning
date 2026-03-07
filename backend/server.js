@@ -17,6 +17,13 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/bites", require("./routes/biteRoutes"));
 app.use("/api/progress", require("./routes/progressRoutes"));
 app.use("/api/favorites", require("./routes/favoriteRoutes"));
+app.use("/api/leaderboard", require("./routes/leaderboardRoutes"));
+app.use("/api/forum", require("./routes/forumRoutes"));
+app.use("/api/requests", require("./routes/contentRequestRoutes"));
+app.use("/api/support", require("./routes/supportRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
+app.use("/api/activity", require("./routes/activityRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 app.get("/", (req, res) => {
   res.send("Backend Running");
 });

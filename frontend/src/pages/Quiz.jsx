@@ -327,6 +327,21 @@ const Quiz = () => {
   const question = questions[index];
   const isLast = index === questions.length - 1;
 
+  const sendQuizCompletion = async (finalScore, totalQuestions) => {
+    try {
+      if (!topicId) return;
+      const percentScore =
+        totalQuestions > 0 ? Math.round((finalScore / totalQuestions) * 100) : 0;
+      const passed = percentScore >= 80; // treat 80%+ as pass
+      await API.post(`/progress/quiz/${topicId}/complete`, {
+        passed,
+        score: percentScore,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleOptionClick = (option) => {
     if (showFeedback || timer === 0) return;
 
@@ -497,7 +512,8 @@ const Quiz = () => {
                   </p>
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={async () => {
+                      await sendQuizCompletion(score, questions.length);
                       setSelectedMainCategory(null);
                       setSelectedSubCategory(null);
                       navigate("/quizzes");

@@ -10,6 +10,24 @@ const UserSchema = new mongoose.Schema({
   picture: String,
   googleId: String,
 
+  // Gamification fields
+  points: {
+    type: Number,
+    default: 0,
+  },
+  level: {
+    type: String,
+    enum: ["Beginner", "Intermediate", "Advanced"],
+    default: "Beginner",
+  },
+
+  // Simple role flag for admin features/moderation
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+
   streak: {
     type: Number,
     default: 0,

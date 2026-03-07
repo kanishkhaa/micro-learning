@@ -8,6 +8,12 @@ import Quizzes from "./pages/Quiz";
 import Favorites from "./pages/Favorites";
 import TopicList from "./pages/TopicList";
 import Flashcards from "./pages/Flashcards";
+import Leaderboard from "./pages/Leaderboard";
+import Forum from "./pages/Forum";
+import Requests from "./pages/Requests";
+import Support from "./pages/Support";
+import Notifications from "./pages/Notifications";
+import AdminAnalytics from "./pages/AdminAnalytics";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -67,6 +73,54 @@ function App() {
           element={
             <ProtectedRoute>
               <Flashcards />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute>
+              <Leaderboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/forum"
+          element={
+            <ProtectedRoute>
+              <Forum />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/requests"
+          element={
+            <ProtectedRoute>
+              <Requests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <Support />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <ProtectedRoute>
+              <AdminAnalytics />
             </ProtectedRoute>
           }
         />
