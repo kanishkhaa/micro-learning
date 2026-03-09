@@ -1,11 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-  const isAdmin = user?.role === "admin";
+
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      setUser(storedUser);
+      setIsAdmin(storedUser?.role === "admin");
+    } catch (err) {
+      setUser(null);
+      setIsAdmin(false);
+    }
+  }, []);
 
   const userMenu = [
     { name: "Dashboard", path: "/home", icon: "📊" },
@@ -19,17 +31,17 @@ const Sidebar = () => {
     { name: "Notifications", path: "/notifications", icon: "🔔" },
   ];
 
-  // When logged in as admin, show only admin-related items in the sidebar
   const adminMenu = [
     { name: "Admin Analytics", path: "/admin/analytics", icon: "🛠️" },
     { name: "All Requests", path: "/admin/requests", icon: "📝" },
     { name: "Support Tickets", path: "/admin/support", icon: "🛟" },
+     { name: "Flashcards", path: "/admin/flashcards", icon: "🧠" },
   ];
 
   const menu = isAdmin ? adminMenu : userMenu;
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
@@ -52,15 +64,12 @@ const Sidebar = () => {
               key={m.path}
               type="button"
               onClick={() => navigate(m.path)}
-              className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-sm
-                transition-all duration-200
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-sm transition-all duration-200
                 ${
                   isActive
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
                     : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
-                }
-              `}
+                }`}
             >
               <span className="text-lg">{m.icon}</span>
               <span>{m.name}</span>
